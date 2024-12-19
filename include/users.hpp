@@ -12,9 +12,10 @@ class users {
         std::string password;
     
     public:
-        std::string getUserInfo(void) const;
+        void getUserInfo(void) const;
         std::string login(MYSQL* conn);
         std::string singup(MYSQL* conn);
+        int pin(void);
 };
 
 #endif // USERS_HPP

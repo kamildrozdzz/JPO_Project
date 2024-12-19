@@ -17,6 +17,7 @@ using std::cout, std::cin, std::endl, std::string;
 #define PORT 3306
 
 string user_name{};
+const int PIN = 1234;
 
 MYSQL* conn;
 MYSQL_RES* res_set;

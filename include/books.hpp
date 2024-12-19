@@ -15,6 +15,7 @@ class books {
     
     public:
         void displayAll(MYSQL* conn) const;
+        void addBook(MYSQL* conn);
 };
 
 #endif // BOOKS_HPP

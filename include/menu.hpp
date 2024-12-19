@@ -6,6 +6,46 @@
 using std::cout, std::endl;
 
 namespace libraryonline{
+
+    void admin_menu(MYSQL* conn, users user) {
+        char choice;
+        while (true){
+            system("cls");
+            cout << "--------------------------------" << endl;
+            cout << "       ADMIN PANEL"<< endl;
+            cout << "--------------------------------" << endl;
+            cout << " 1. ADD BOOK" << endl;
+            cout << " 2. UPDATE BOOK" << endl;
+            cout << " 4. UPDATE USER" << endl;
+            cout << " 5. BORROWED BOOKS" << endl;
+            cout << " 0. RETURN TO MAIN MENU" << endl;
+            cout << "Enter Your Choice: ";
+
+            choice = getch();
+                    
+            switch (choice) {
+                case '1':
+                    {
+                        books book;
+                        book.addBook(conn);
+                    }
+                    break;
+                case '2':
+                    break;
+                case '3':
+                    break;
+                case '0':
+                    return;
+                    break;
+                default:
+                    cout << "\nInvalid option! Try again." << endl;
+                    break;
+                }
+                cout << "\nPress any key to continue...";
+                getch();
+            } 
+        }
+    
     void main_menu(MYSQL* conn) {
         char choice;
         users user;
@@ -46,6 +86,7 @@ namespace libraryonline{
                 cout << "--------------------------------" << endl;
                 cout << " 1. DISPLAY BOOKS" << endl;
                 cout << " 2. USER INFO" << endl;
+                cout << " 3. ADMIN PANEL" << endl;
                 cout << " 0. EXIT" << endl;
                 cout << "Enter Your Choice: " << endl;
 
@@ -59,7 +100,14 @@ namespace libraryonline{
                         }
                         break;
                     case '2':
-                        cout << "\nSIGN UP selected" << endl;
+                        user.getUserInfo();
+                        break;
+                    case '3':
+                        if(user.pin()==PIN){
+                            libraryonline::admin_menu(conn, user);
+                        }else{
+                            cout << "Incorrect Password" << endl;
+                        }
                         break;
                     case '0':
                         cout << "\nExiting..." << endl;
@@ -68,11 +116,11 @@ namespace libraryonline{
                         cout << "\nInvalid option! Try again." << endl;
                         break;
                 }
-                cout << "\nPress any key to continue...";
-                getch();
             }
             
         }
     }
+
+    
 }
 

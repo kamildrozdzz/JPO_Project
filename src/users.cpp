@@ -6,8 +6,12 @@
 
 using std::cout, std::cin, std::endl;
 
-std::string users::getUserInfo(void) const{
-    return "ID: " + std::to_string(id) + "\n" +
+void users::getUserInfo(void) const{
+    system("cls");
+    cout << "--------------------------------" << endl;
+    cout << "           YOUR ACC." << endl;
+    cout << "--------------------------------" << endl;
+    cout<< "ID: " + std::to_string(id) + "\n" +
                "Name: " + name + "\n" +
                "Surname: " + surname + "\n" +
                "Email: " + email + "\n" +
@@ -31,6 +35,8 @@ std::string users::login(MYSQL* conn){
     MYSQL_ROW row{};
     while( (row = mysql_fetch_row(res_set)) != NULL){
         if(row[1]==name && row[4]==password){
+            surname = row[2];
+            email = row[3];
             cout << "Pomyślne logowanie" << endl;
             return name;
         }
@@ -83,4 +89,19 @@ std::string users::singup(MYSQL* conn){
     else
         cout <<"ERROR!"<< endl;
     return name;
+}
+
+int users::pin(void){
+    int num = 0 ;
+    system("cls");
+    cout << "--------------------------------" << endl;
+    cout << "       ENTER YOUR PING" << endl;
+    cout << "--------------------------------" << endl;
+    cout << "Enter password : ";
+    for(int i = 0; i < 4; i++){
+        num=num*10+(getch()-48);
+        cout<<"*";
+    }
+    cout << endl;
+    return num;
 }
