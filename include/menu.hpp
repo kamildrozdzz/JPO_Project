@@ -16,8 +16,8 @@ namespace libraryonline{
             cout << "--------------------------------" << endl;
             cout << " 1. ADD BOOK" << endl;
             cout << " 2. UPDATE BOOK" << endl;
-            cout << " 4. UPDATE USER" << endl;
-            cout << " 5. BORROWED BOOKS" << endl;
+            cout << " 3. UPDATE USER" << endl;
+            cout << " 4. BORROWED BOOKS" << endl;
             cout << " 0. RETURN TO MAIN MENU" << endl;
             cout << "Enter Your Choice: ";
 
@@ -31,8 +31,19 @@ namespace libraryonline{
                     }
                     break;
                 case '2':
+                    {
+                        books book;
+                        book.updateBook(conn);
+                    }
                     break;
                 case '3':
+                    user.updateUser(conn);
+                    break;
+                case '4':
+                    {
+                        books book;
+                        book.borrowedBooks(conn);
+                    }
                     break;
                 case '0':
                     return;
@@ -116,6 +127,8 @@ namespace libraryonline{
                         cout << "\nInvalid option! Try again." << endl;
                         break;
                 }
+                cout << "\nPress any key to continue...";
+                getch();
             }
             
         }

@@ -16,6 +16,8 @@ class books {
     public:
         void displayAll(MYSQL* conn) const;
         void addBook(MYSQL* conn);
+        void updateBook(MYSQL* conn);
+        void borrowedBooks(MYSQL* conn);
 };
 
 #endif // BOOKS_HPP

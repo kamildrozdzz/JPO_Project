@@ -26,7 +26,21 @@ std::string users::login(MYSQL* conn){
     std::cout << "Enter your user name:\n";
     std::cin >> name;
     std::cout << "Enter your password:\n";
-    std::cin >> password;
+    
+    char ch;
+    password = "";
+    while((ch = _getch()) != '\r'){
+        if(ch == '\b'){ 
+            if(!password.empty()) {
+                password.pop_back();
+                std::cout << "\b \b";
+            }
+        } else {
+            password += ch;
+            std::cout << '*';
+        }
+    }
+    std::cout << std::endl;
 
     std::string query = "Select * from uzytkownicy;";
     const char * q = query.c_str();
@@ -95,7 +109,7 @@ int users::pin(void){
     int num = 0 ;
     system("cls");
     cout << "--------------------------------" << endl;
-    cout << "       ENTER YOUR PING" << endl;
+    cout << "       ENTER YOUR PIN" << endl;
     cout << "--------------------------------" << endl;
     cout << "Enter password : ";
     for(int i = 0; i < 4; i++){
@@ -104,4 +118,61 @@ int users::pin(void){
     }
     cout << endl;
     return num;
+}
+
+void users::updateUser(MYSQL* conn) {
+    system("cls");
+    cout << "--------------------------------" << endl;
+    cout << "         UPDATE USER" << endl;
+    cout << "--------------------------------" << endl;
+
+    // Display current users
+    std::string query = "SELECT id_uzytkownika, imie, nazwisko, email, status FROM uzytkownicy;";
+    const char* q = query.c_str();
+    mysql_query(conn, q);
+    MYSQL_RES* res_set = mysql_store_result(conn);
+    MYSQL_ROW row{};
+
+    cout << "Current users in the database:" << endl;
+    while ((row = mysql_fetch_row(res_set)) != NULL) {
+        cout << "ID: " << row[0] << " - Name: " << row[1] << " - Surname: " << row[2] << " - Email: " << row[3] << " - Status: "<< row[4] << endl;
+    }
+    cout << "--------------------------------" << endl;
+
+    int userId;
+    cout << "Enter the ID of the user to update: ";
+    cin >> userId;
+
+    std::cin.ignore(10000, '\n');
+
+    cout << "Enter the new name (leave empty to keep current): ";
+    std::getline(cin, name);
+
+    cout << "Enter the new surname (leave empty to keep current): ";
+    std::getline(cin, surname);
+
+    cout << "Enter the new email (leave empty to keep current): ";
+    std::getline(cin, email);
+
+    cout << "Enter the new status (leave empty to keep current): ";
+    std::getline(cin, status);
+
+    query = "UPDATE uzytkownicy SET ";
+    if (!name.empty()) query += "imie = '" + name + "', ";
+    if (!surname.empty()) query += "nazwisko = '" + surname + "', ";
+    if (!email.empty()) query += "email = '" + email + "', ";
+    if (!status.empty()) query += "status = '" + status + "', ";
+    query.pop_back();
+    query.pop_back();
+    query += " WHERE id_uzytkownika = " + std::to_string(userId) + ";";
+
+    q = query.c_str();
+    mysql_query(conn, q);
+    res_set = mysql_store_result(conn);
+
+    if (!res_set) {
+        cout << "User updated successfully." << endl;
+    } else {
+        cout << "Error updating user. Check database connection." << endl;
+    }
 }

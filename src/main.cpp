@@ -3,12 +3,12 @@
 
 int main(){
     #ifdef _WIN32
-        SetConsoleOutputCP(CP_UTF8); //utf8 encoding in teminal
+        SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);       
     #endif
 
     conn = mysql_init(0);
-    conn = mysql_real_connect(conn, HOST, USER, PASS, DATABASE, PORT, NULL, 0); //db connect
+    conn = mysql_real_connect(conn, HOST, USER, PASS, DATABASE, PORT, NULL, 0); 
 
     if(conn){
         while (1)
