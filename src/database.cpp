@@ -1,4 +1,4 @@
-#include "C:\Program Files\MySQL\MySQL Server 8.0\include\mysql.h"
+#include <mysql.h>
 #include "database.hpp"
 #include <string>
 #include <iostream>
@@ -47,18 +47,18 @@ void MySQLWrapper::setQuery(std::string query) {
     this->query = query;
 }
 
-MYSQL_RES* MySQLWrapper::executeQuery(MYSQL* conn) {
+MYSQL_RES* MySQLWrapper::executeQuery() {
     q = query.c_str();
     mysql_query(conn, q);
     res_set = mysql_store_result(conn);
     return res_set;
 }
 
-User MySQLWrapper::login(MYSQL* conn, std::string name, std::string password) {
+User MySQLWrapper::login(std::string name, std::string password) {
     std::string surname, email, status;
     setQuery("SELECT * FROM uzytkownicy;");
     MYSQL_ROW row{};
-    res_set = executeQuery(conn);
+    res_set = executeQuery();
     while((row = mysql_fetch_row(res_set)) != NULL) {
         if(row[1] == name && row[4] == password) {
             surname = row[2];
@@ -91,13 +91,13 @@ User MySQLWrapper::login(MYSQL* conn, std::string name, std::string password) {
                 }
             }
     system("cls");
-    return login(conn, name, password);
+    return login(name, password);
 }
 
-User MySQLWrapper::signup(MYSQL* conn, std::string name, std::string surname, std::string email, std::string password) {
+User MySQLWrapper::signup(std::string name, std::string surname, std::string email, std::string password) {
     setQuery("SELECT * FROM uzytkownicy;");
     MYSQL_ROW row{};
-    res_set = executeQuery(conn);
+    res_set = executeQuery();
     while((row = mysql_fetch_row(res_set)) != NULL) {
         if(row[3] == email) {
             cout << "Użytkownik o podanym adresie email istnieje!" << endl;
@@ -106,7 +106,7 @@ User MySQLWrapper::signup(MYSQL* conn, std::string name, std::string surname, st
             system("cls");
             cout << "Enter your email:" << endl;
             std::cin >> email;
-            return signup(conn, name, surname, email, password);
+            return signup(name, surname, email, password);
         }
     }
     setQuery("INSERT INTO uzytkownicy (imie, nazwisko, email, haslo) VALUES ('" 
@@ -117,7 +117,7 @@ User MySQLWrapper::signup(MYSQL* conn, std::string name, std::string surname, st
     if (mysql_query(conn, query.c_str()) == 0) {
         cout << "Successfully signed up" << endl;
         setQuery("SELECT MAX(id_uzytkownika) AS max_id FROM uzytkownicy;");
-        res_set = executeQuery(conn);
+        res_set = executeQuery();
         row = mysql_fetch_row(res_set);
         cout << row[0] << endl;
         User user(std::stoi(row[0]), name, surname, email, password);
@@ -126,7 +126,7 @@ User MySQLWrapper::signup(MYSQL* conn, std::string name, std::string surname, st
         cout << "ERROR! Check db connection" << endl;
         getch();
         system("cls");
-        return signup(conn, name, surname, email, password);
+        return signup(name, surname, email, password);
     }
 }
 
@@ -138,11 +138,10 @@ bool MySQLWrapper::checkPin(int pin){
     }
 }
 
-void MySQLWrapper::displayAllBooks(MYSQL* conn){
+void MySQLWrapper::displayAllBooks(void){
     system("cls");
-    MYSQL_ROW row{};
     setQuery("SELECT * FROM ksiazki;");
-    MYSQL_RES* res_set = executeQuery(conn);
+    res_set = executeQuery();
     int count = 0;
     while((row = mysql_fetch_row(res_set)) != NULL)
     {
@@ -168,17 +167,17 @@ void MySQLWrapper::displayAllBooks(MYSQL* conn){
     }
 }
 
-int MySQLWrapper::getNewBookID(MYSQL* conn){
+int MySQLWrapper::getNewBookID(void){
     setQuery("SELECT MAX(id_produktu) AS max_id FROM ksiazki;");
-    res_set = executeQuery(conn);
+    res_set = executeQuery();
     row = mysql_fetch_row(res_set);
     return std::stoi(row[0]) + 1;
 }
 
-void MySQLWrapper::listOfBooks(MYSQL* conn){
+void MySQLWrapper::listOfBooks(void){
     system("cls");
     setQuery("SELECT * FROM ksiazki;");
-    res_set = executeQuery(conn);
+    res_set = executeQuery();
 
     cout << "Current books in the database:" << endl;
     while ((row = mysql_fetch_row(res_set)) != NULL) {
@@ -187,7 +186,7 @@ void MySQLWrapper::listOfBooks(MYSQL* conn){
     cout << "--------------------------------" << endl;
 }
 
-void MySQLWrapper::addBook(MYSQL* conn, Book book){
+void MySQLWrapper::addBook(Book book){
     setQuery("INSERT INTO ksiazki (tytul, seria, autor, wydawnictwo, liczba_stron, rok_wydania) VALUES ('" 
                     + book.getTitle() + "', '" 
                     + book.getSeries() + "', '" 
@@ -202,12 +201,10 @@ void MySQLWrapper::addBook(MYSQL* conn, Book book){
     }
 }
 
-void MySQLWrapper::listOfUsers(MYSQL* conn){
+void MySQLWrapper::listOfUsers(void){
     system("cls");
     setQuery("SELECT * FROM uzytkownicy;");
-    MYSQL_RES* res_set = executeQuery(conn);
-    MYSQL_ROW row{};
-
+    executeQuery();
     cout << "Current users in the database:" << endl;
     while ((row = mysql_fetch_row(res_set)) != NULL) {
         cout << "ID: " << row[0] << " - Name: " << row[1] << " - Surname: "<< row[2] << " - Email: " << row[3] <<endl;
@@ -215,7 +212,7 @@ void MySQLWrapper::listOfUsers(MYSQL* conn){
     cout << "--------------------------------" << endl;
 }
 
-void MySQLWrapper::updateBook(MYSQL* conn, Book book){
+void MySQLWrapper::updateBook(Book book){
     std::string query = "UPDATE ksiazki SET ";
     if (!(book.getTitle()=="Unknown")) query += "tytul = '" + book.getTitle() + "', ";
     if (!(book.getSeries()=="Unknown")) query += "seria = '" + book.getSeries() + "', ";
@@ -228,7 +225,7 @@ void MySQLWrapper::updateBook(MYSQL* conn, Book book){
     query += " WHERE id_produktu = " + std::to_string(book.getId()) + ";";
 
     setQuery(query);
-    res_set = executeQuery(getConnection());
+    res_set = executeQuery();
 
     if (!res_set) {
         cout << "Book updated successfully." << endl;
@@ -237,7 +234,7 @@ void MySQLWrapper::updateBook(MYSQL* conn, Book book){
     }
 }
 
-void MySQLWrapper::updateUser(MYSQL* conn, User user){
+void MySQLWrapper::updateUser(User user){
     std::string query = "UPDATE uzytkownicy SET ";
     if (!(user.getUserName()=="Unknown")) query += "imie = '" + user.getUserName() + "', ";
     if (!(user.getSurname()=="Unknown")) query += "nazwisko = '" + user.getSurname() + "', ";
@@ -249,7 +246,7 @@ void MySQLWrapper::updateUser(MYSQL* conn, User user){
     query += " WHERE id_uzytkownika = " + std::to_string(user.getUserID()) + ";";
 
     setQuery(query);
-    res_set = executeQuery(getConnection());
+    res_set = executeQuery();
 
     if (!res_set) {
         cout << "User updated successfully." << endl;
@@ -258,9 +255,9 @@ void MySQLWrapper::updateUser(MYSQL* conn, User user){
     }
 }
 
-void MySQLWrapper::borrowedBooks(MYSQL* conn) {
+void MySQLWrapper::borrowedBooks(void) {
     setQuery("SELECT ksiazki.tytul AS TytulKsiazki, uzytkownicy.imie AS Imie, uzytkownicy.nazwisko AS Nazwisko, wypozyczenia.id_produktu FROM  wypozyczenia JOIN ksiazki ON wypozyczenia.id_produktu = ksiazki.id_produktu JOIN uzytkownicy ON wypozyczenia.id_uzytkownika = uzytkownicy.id_uzytkownika WHERE wypozyczenia.status = 'wypożyczona';");
-    res_set = executeQuery(getConnection());
+    res_set = executeQuery();
     cout << "Currently borrowed books:" << endl;
     while ((row = mysql_fetch_row(res_set)) != NULL) {
         cout <<row[3]<< " - Title: " << row[0] << " - Borrowed by: " << row[1] << " " << row[2] << endl;
@@ -270,9 +267,9 @@ void MySQLWrapper::borrowedBooks(MYSQL* conn) {
     mysql_free_result(res_set);
 }
 
-void MySQLWrapper::borrowedBooks(MYSQL* conn, int userID) {
-    setQuery("SELECT ksiazki.tytul AS TytulKsiazki, uzytkownicy.imie AS Imie, uzytkownicy.nazwisko AS Nazwisko, wypozyczenia.id_produktu FROM  wypozyczenia JOIN ksiazki ON wypozyczenia.id_produktu = ksiazki.id_produktu JOIN uzytkownicy ON wypozyczenia.id_uzytkownika = uzytkownicy.id_uzytkownika WHERE wypozyczenia.status = 'wypożyczona' AND wypozyczenia.id_uzytkownika = " + std::to_string(userID) + ";");
-    res_set = executeQuery(getConnection());
+void MySQLWrapper::borrowedBooks(User user) {
+    setQuery("SELECT ksiazki.tytul AS TytulKsiazki, uzytkownicy.imie AS Imie, uzytkownicy.nazwisko AS Nazwisko, wypozyczenia.id_produktu FROM  wypozyczenia JOIN ksiazki ON wypozyczenia.id_produktu = ksiazki.id_produktu JOIN uzytkownicy ON wypozyczenia.id_uzytkownika = uzytkownicy.id_uzytkownika WHERE wypozyczenia.status = 'wypożyczona' AND wypozyczenia.id_uzytkownika = " + std::to_string(user.getUserID()) + ";");
+    res_set = executeQuery();
     cout << "Currently borrowed books:" << endl;
     while ((row = mysql_fetch_row(res_set)) != NULL) {
         cout <<row[3]<< " - Title: " << row[0] << " - Borrowed by: " << row[1] << " " << row[2] << endl;
@@ -281,14 +278,14 @@ void MySQLWrapper::borrowedBooks(MYSQL* conn, int userID) {
     mysql_free_result(res_set);
 }
 
-void MySQLWrapper::updateBorrowedBooks(MYSQL* conn, int bookID){
+void MySQLWrapper::updateBorrowedBooks(Book book){
     setQuery("SELECT id_produktu FROM wypozyczenia WHERE status = 'wypożyczona';");
-    res_set = executeQuery(conn);
+    res_set = executeQuery();
     while ((row = mysql_fetch_row(res_set))!=NULL){
-        if(std::stoi(row[0])==bookID){
-            query = "UPDATE wypozyczenia SET status = 'zwrócona' WHERE id_produktu = " + std::to_string(bookID) + ";";
+        if(std::stoi(row[0])==book.getId()){
+            query = "UPDATE wypozyczenia SET status = 'zwrócona' WHERE id_produktu = " + std::to_string(book.getId()) + ";";
             setQuery(query);
-            res_set = executeQuery(conn);
+            res_set = executeQuery();
             if(!res_set){
                 cout << "Book returned successfully." << endl;
                 return;
@@ -301,8 +298,8 @@ void MySQLWrapper::updateBorrowedBooks(MYSQL* conn, int bookID){
     cout << "Book not found in borrowed books." << endl;
 }
 
-void MySQLWrapper::addBorrowedBook(MYSQL* conn, int bookID, int userID){
-    query = "INSERT INTO wypozyczenia (id_uzytkownika, id_produktu, data_wypozyczenia, data_zwrotu, status)  VALUES ("+ std::to_string(userID) +", "+ std::to_string(bookID) +", CURDATE(), NULL, 'wypożyczona');";
+void MySQLWrapper::addBorrowedBook(Book book, User user){
+    query = "INSERT INTO wypozyczenia (id_uzytkownika, id_produktu, data_wypozyczenia, data_zwrotu, status)  VALUES ("+ std::to_string(user.getUserID()) +", "+ std::to_string(book.getId()) +", CURDATE(), NULL, 'wypożyczona');";
     setQuery(query);
     if (mysql_query(conn, query.c_str()) == 0) {
         cout << "Successfully borrowed book" << endl;

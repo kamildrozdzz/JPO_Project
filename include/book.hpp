@@ -15,7 +15,7 @@ class Book {
     
     public:
         Book();
-        Book(int id, std::string title, std::string series, std::string author, std::string publishingHouse, int numberOfPages, int yearOfIssue);
+        Book(int id = 0, std::string title = "Unknown", std::string series = "Unknown", std::string author = "Unknown", std::string publishingHouse = "Unknown", int numberOfPages = 0, int yearOfIssue = 0);
         int getId(void) const;
         std::string getTitle(void) const;
         std::string getSeries(void) const;

@@ -1,4 +1,4 @@
-#include "C:\Program Files\MySQL\MySQL Server 8.0\include\mysql.h"
+#include <mysql.h>
 #include <book.hpp>
 #include <string>
 #include <iostream>

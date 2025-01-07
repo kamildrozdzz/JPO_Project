@@ -1,4 +1,4 @@
-#include "C:\Program Files\MySQL\MySQL Server 8.0\include\mysql.h"
+#include <mysql.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -30,20 +30,20 @@ public:
     void setPin(int pin);
     int getPin(void) const;
     bool checkPin(int pin);
-    User login(MYSQL* conn, std::string name, std::string password);
-    User signup(MYSQL* conn, std::string name, std::string surname, std::string email, std::string password);
+    User login(std::string name, std::string password);
+    User signup(std::string name, std::string surname, std::string email, std::string password);
     void setQuery(std::string query);
-    void displayAllBooks(MYSQL* conn);
-    void listOfBooks(MYSQL* conn);
-    void listOfUsers(MYSQL* conn);
-    int getNewBookID(MYSQL* conn);
-    void addBook(MYSQL* conn, Book book);
-    void updateBook(MYSQL* conn, Book book);
-    void updateUser(MYSQL* conn, User user);
-    void borrowedBooks(MYSQL* conn);
-    void borrowedBooks(MYSQL* conn, int userID);
-    void updateBorrowedBooks(MYSQL* conn, int bookID);
-    void addBorrowedBook(MYSQL* conn, int bookID, int userID);
-    MYSQL_RES* executeQuery(MYSQL* conn);
+    void displayAllBooks(void);
+    void listOfBooks(void);
+    void listOfUsers(void);
+    int getNewBookID(void);
+    void addBook(Book book);
+    void updateBook(Book book);
+    void updateUser(User user);
+    void borrowedBooks(void);
+    void borrowedBooks(User user);
+    void updateBorrowedBooks(Book book);
+    void addBorrowedBook(Book book, User user);
+    MYSQL_RES* executeQuery();
     ~MySQLWrapper();
 };

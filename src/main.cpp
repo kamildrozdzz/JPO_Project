@@ -1,4 +1,4 @@
-#include "C:\Program Files\MySQL\MySQL Server 8.0\include\mysql.h"
+#include <mysql.h>
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -63,7 +63,7 @@ int main() {
                                         std::cout << '*';
                                     }
                                 }
-                                user = mySQLobject.login(mySQLobject.getConnection(), name, password);
+                                user = mySQLobject.login(name, password);
                                 mySQLobject.setLoggedUser(user);
                                 break;
                             }
@@ -84,7 +84,7 @@ int main() {
                                 std::cout << "Enter your password:\n";
                                 std::cin >> password;
 
-                                user = mySQLobject.signup(mySQLobject.getConnection(), name, surname, email, password);
+                                user = mySQLobject.signup(name, surname, email, password);
                                 mySQLobject.setLoggedUser(user);
                                 break;
                             }
@@ -115,7 +115,7 @@ int main() {
                     switch (choice) {
                         case '1': 
                             {
-                                mySQLobject.displayAllBooks(mySQLobject.getConnection());
+                                mySQLobject.displayAllBooks();
                                 break;
                             }
                         case '2':
@@ -124,11 +124,12 @@ int main() {
                                 cout << "--------------------------------" << endl;
                                 cout << "       BORROW BOOK" << endl;
                                 cout << "--------------------------------" << endl;
-                                mySQLobject.listOfBooks(mySQLobject.getConnection());
+                                mySQLobject.listOfBooks();
                                 cout << "Enter the ID of the book to borrow: ";
                                 int bookId;
                                 cin >> bookId;
-                                mySQLobject.addBorrowedBook(mySQLobject.getConnection(), bookId, user.getUserID());
+                                Book book(bookId);
+                                mySQLobject.addBorrowedBook(book, user);
                                 break;
                             }
                         case '3':
@@ -137,7 +138,7 @@ int main() {
                                 cout << "--------------------------------" << endl;
                                 cout << "           YOUR BOOKS." << endl;
                                 cout << "--------------------------------" << endl;
-                                mySQLobject.borrowedBooks(mySQLobject.getConnection(), user.getUserID());
+                                mySQLobject.borrowedBooks(user);
                             }
                             break;
                         case '4':
@@ -231,13 +232,13 @@ int main() {
                                                     std::cin.clear();
                                                     std::cin.ignore(10000, '\n');
                                                 }
-                                                Book book(mySQLobject.getNewBookID(mySQLobject.getConnection()), title, series, author, publishingHouse, numberOfPages, yearOfIssue);
-                                                mySQLobject.addBook(mySQLobject.getConnection(), book);
+                                                Book book(mySQLobject.getNewBookID(), title, series, author, publishingHouse, numberOfPages, yearOfIssue);
+                                                mySQLobject.addBook(book);
                                             }
                                             break;
                                         case '2':
                                             {
-                                                mySQLobject.listOfBooks(mySQLobject.getConnection());
+                                                mySQLobject.listOfBooks();
                                                 cout << "\nPress any key to continue...";
                                                 getch();
                                                 system("cls");
@@ -285,12 +286,12 @@ int main() {
                                                     }
                                                 }
                                                 Book book(id, title, series, author, publishingHouse, numberOfPages, yearOfIssue);
-                                                mySQLobject.updateBook(mySQLobject.getConnection(), book);
+                                                mySQLobject.updateBook(book);
                                             }
                                             break;
                                         case '3':
                                             {
-                                                mySQLobject.listOfUsers(mySQLobject.getConnection());
+                                                mySQLobject.listOfUsers();
                                                 cout << "\nPress any key to continue...";
                                                 getch();
                                                 system("cls");
@@ -318,7 +319,7 @@ int main() {
                                                 std::getline(cin, status);
 
                                                 User updateUser(userId, name, surname, email, status);
-                                                mySQLobject.updateUser(mySQLobject.getConnection(), updateUser);
+                                                mySQLobject.updateUser(updateUser);
 
                                             }
                                             break;
@@ -328,7 +329,7 @@ int main() {
                                                 cout << "--------------------------------" << endl;
                                                 cout << "       BORROWED BOOKS" << endl;
                                                 cout << "--------------------------------" << endl;
-                                                mySQLobject.borrowedBooks(mySQLobject.getConnection());
+                                                mySQLobject.borrowedBooks();
                                             }
                                             break;
                                         case '5':
@@ -337,11 +338,11 @@ int main() {
                                                 cout << "--------------------------------" << endl;
                                                 cout << "       BORROWED BOOKS" << endl;
                                                 cout << "--------------------------------" << endl;
-                                                mySQLobject.borrowedBooks(mySQLobject.getConnection());
+                                                mySQLobject.borrowedBooks();
                                                 cout << "Enter the ID of the book to update: ";
                                                 int bookId;
                                                 cin >> bookId;
-                                                mySQLobject.updateBorrowedBooks(mySQLobject.getConnection(), bookId);
+                                                mySQLobject.updateBorrowedBooks(bookId);
                                             }
                                             break;
                                         case '0':
