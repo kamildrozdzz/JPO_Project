@@ -23,8 +23,6 @@ class Book {
         std::string getPublishingHouse(void) const;
         int getNumberOfPages(void) const;
         int getYearOfIssue(void) const;
-        void updateBook(void);
-        void borrowedBooks(MYSQL* conn);
 };
 
 #endif // BOOKS_HPP

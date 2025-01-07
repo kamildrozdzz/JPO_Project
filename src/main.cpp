@@ -137,7 +137,7 @@ int main() {
                                 cout << "--------------------------------" << endl;
                                 cout << "           YOUR BOOKS." << endl;
                                 cout << "--------------------------------" << endl;
-                                
+                                mySQLobject.borrowedBooks(mySQLobject.getConnection(), user.getUserID());
                             }
                             break;
                         case '4':
@@ -240,8 +240,51 @@ int main() {
                                                 mySQLobject.listOfBooks(mySQLobject.getConnection());
                                                 cout << "\nPress any key to continue...";
                                                 getch();
-                                                Book book;
-                                                book.updateBook();
+                                                system("cls");
+                                                cout << "--------------------------------" << endl;
+                                                cout << "         UPDATE BOOK" << endl;
+                                                cout << "--------------------------------" << endl;
+                                                int id, numberOfPages, yearOfIssue;
+                                                std::string title, series, author, publishingHouse;
+                                                cout << "Enter the ID of the book to update: ";
+                                                cin >> id;
+
+                                                std::cin.ignore(10000, '\n');
+
+                                                cout << "Enter the new title (leave empty to keep current): ";
+                                                std::getline(cin, title);
+
+                                                cout << "Enter the new series (leave empty to keep current): ";
+                                                std::getline(cin, series);
+
+                                                cout << "Enter the new author (leave empty to keep current): ";
+                                                std::getline(cin, author);
+
+                                                cout << "Enter the new publishing house (leave empty to keep current): ";
+                                                std::getline(cin, publishingHouse);
+
+                                                cout << "Enter the new number of pages (leave empty to keep current): ";
+                                                std::string pagesInput;
+                                                std::getline(cin, pagesInput);
+                                                if (!pagesInput.empty()) {
+                                                    try {
+                                                        numberOfPages = std::stoi(pagesInput);
+                                                    } catch (const std::invalid_argument& e) {
+                                                        cout << "Invalid input for number of pages. Keeping current value." << endl;
+                                                    }
+                                                }
+
+                                                cout << "Enter the new year of issue (leave empty to keep current): ";
+                                                std::string yearInput;
+                                                std::getline(cin, yearInput);
+                                                if (!yearInput.empty()) {
+                                                    try {
+                                                        yearOfIssue = std::stoi(yearInput);
+                                                    } catch (const std::invalid_argument& e) {
+                                                        cout << "Invalid input for year of issue. Keeping current value." << endl;
+                                                    }
+                                                }
+                                                Book book(id, title, series, author, publishingHouse, numberOfPages, yearOfIssue);
                                                 mySQLobject.updateBook(mySQLobject.getConnection(), book);
                                             }
                                             break;
