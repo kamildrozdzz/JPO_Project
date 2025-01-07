@@ -1,0 +1,3 @@
+[submodule "mysql-connector-c"]
+	path = mysql-connector-c
+	url = https://github.com/ketzusaka/mysql-connector-c.git

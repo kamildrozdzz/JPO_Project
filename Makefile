@@ -8,7 +8,7 @@ LIB_DIR = "C:/Program Files/MySQL/MySQL Connector C 6.1/lib" #directory to inclu
 
 LIBS = -lmysql #lib
 
-SRC_FILES = src/main.cpp src/users.cpp src/books.cpp #cpp files
+SRC_FILES = src/main.cpp src/user.cpp src/book.cpp src/database.cpp#cpp files
 
 all: $(TARGET)
 
