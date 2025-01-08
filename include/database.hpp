@@ -27,7 +27,7 @@ public:
     MYSQL* getConnection(void) const;
     void setLoggedUser(User user);
     std::string getLoggedUser(void) const;
-    void setPin(int pin);
+    bool setPin(int pin);
     int getPin(void) const;
     bool checkPin(int pin);
     User login(std::string name, std::string password);

@@ -20,7 +20,7 @@ int main() {
     MySQLWrapper mySQLobject("127.0.0.1", "root", "root", "libraryonline", 3306);
     mySQLobject.setLoggedUser(user);
     mySQLobject.setPin(1234);
-    
+
     if(mySQLobject.getConnection()) {
         while (1) {
             system("cls");
@@ -65,6 +65,11 @@ int main() {
                                 }
                                 user = mySQLobject.login(name, password);
                                 mySQLobject.setLoggedUser(user);
+                                if(mySQLobject.getLoggedUser()=="Unknown"||mySQLobject.getLoggedUser().size()<3){
+                                    cout << "\nWrong login or password" << endl;
+                                }else{
+                                    cout << "\nSuccessfully logged in" << endl;
+                                }
                                 break;
                             }
                         case '2': 
@@ -77,12 +82,31 @@ int main() {
                                 
                                 std::cout << "Enter your user name:\n";
                                 std::cin >> name;
+                                while (name.empty() || name.size() < 3) {
+                                    std::cout << "User name cannot be empty. Please re-enter your user name:\n";
+                                    std::cin >> name;
+                                }
+
                                 std::cout << "Enter your surname:\n";
                                 std::cin >> surname;
+                                while (surname.empty()) {
+                                    std::cout << "Surname cannot be empty. Please re-enter your surname:\n";
+                                    std::cin >> surname;
+                                }
+
                                 std::cout << "Enter your email:\n";
                                 std::cin >> email;
+                                while (email.empty() || email.find('@') == std::string::npos) {
+                                    std::cout << "Invalid email. Please re-enter your email:\n";
+                                    std::cin >> email;
+                                }
+
                                 std::cout << "Enter your password:\n";
                                 std::cin >> password;
+                                while (password.empty()) {
+                                    std::cout << "Password cannot be empty. Please re-enter your password:\n";
+                                    std::cin >> password;
+                                }
 
                                 user = mySQLobject.signup(name, surname, email, password);
                                 mySQLobject.setLoggedUser(user);
@@ -195,11 +219,10 @@ int main() {
                                                 std::cout << "Enter the name of the book: " << std::endl;
                                                 std::getline(std::cin, title);
 
-                                                while (title.empty()) {
-                                                    std::cout << "Enter the name of the book (Title cannot be empty): " << std::endl;
+                                                while (title.empty() || title.find_first_not_of(' ') == std::string::npos) {
+                                                    std::cout << "Enter the name of the book (Title cannot be empty or just spaces): " << std::endl;
                                                     std::getline(std::cin, title);
                                                 }
-
 
                                                 std::cout << "Enter the series: "<< endl;
                                                 std::getline(std::cin, series);

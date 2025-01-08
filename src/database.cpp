@@ -10,6 +10,12 @@
 using std::cout, std::cin, std::endl;
 
 MySQLWrapper::MySQLWrapper(std::string host, std::string user, std::string PASS, std::string DATABASE, int PORT) {
+    if (host.empty() || user.empty() || PASS.empty() || DATABASE.empty() || PORT <= 0) {
+        std::cout << "Invalid database connection parameters." << std::endl;
+        conn = nullptr;
+        return;
+    }
+
     conn = mysql_init(0);
     if (conn) {
         conn = mysql_real_connect(conn, host.c_str(), user.c_str(), PASS.c_str(), DATABASE.c_str(), PORT, NULL, 0);
@@ -28,6 +34,9 @@ MYSQL* MySQLWrapper::getConnection(void) const {
 }
 
 void MySQLWrapper::setLoggedUser(User user){
+    if (user.getUserName().empty() || user.getUserName().size() < 3) {
+        return;
+    }
     loggedUser = user.getUserName();
 }
 
@@ -35,8 +44,13 @@ std::string MySQLWrapper::getLoggedUser(void) const {
     return loggedUser;
 }
 
-void MySQLWrapper::setPin(int pin) {
+bool MySQLWrapper::setPin(int pin) {
+    if (pin < 4) {
+        cout << "Invalid PIN." << endl;
+        return false;
+    }
     this->pin = pin;
+    return true;
 }
 
 int MySQLWrapper::getPin(void) const {
@@ -44,10 +58,18 @@ int MySQLWrapper::getPin(void) const {
 }
 
 void MySQLWrapper::setQuery(std::string query) {
+    if (query.empty()) {
+        cout << "\nQuery cannot be empty." << endl;
+        return;
+    }
     this->query = query;
 }
 
 MYSQL_RES* MySQLWrapper::executeQuery() {
+    if (!conn) {
+        cout << "Invalid database connection." << endl;
+        return nullptr;
+    }
     q = query.c_str();
     mysql_query(conn, q);
     res_set = mysql_store_result(conn);
@@ -55,6 +77,10 @@ MYSQL_RES* MySQLWrapper::executeQuery() {
 }
 
 User MySQLWrapper::login(std::string name, std::string password) {
+    if (name.empty() || password.empty()) {
+        cout << "Name or password cannot be empty." << endl;
+        return User();
+    }
     std::string surname, email, status;
     setQuery("SELECT * FROM uzytkownicy;");
     MYSQL_ROW row{};
@@ -64,7 +90,6 @@ User MySQLWrapper::login(std::string name, std::string password) {
             surname = row[2];
             email = row[3];
             status = row[5];
-            cout << "\nPomyślne logowanie" << endl;
 
             User user(std::stoi(row[0]), name, surname, email, password, status);
             return user;
@@ -95,6 +120,10 @@ User MySQLWrapper::login(std::string name, std::string password) {
 }
 
 User MySQLWrapper::signup(std::string name, std::string surname, std::string email, std::string password) {
+    if (name.empty() || surname.empty() || email.empty() || password.empty()) {
+        cout << "All fields are required." << endl;
+        return User();
+    }
     setQuery("SELECT * FROM uzytkownicy;");
     MYSQL_ROW row{};
     res_set = executeQuery();
@@ -131,11 +160,11 @@ User MySQLWrapper::signup(std::string name, std::string surname, std::string ema
 }
 
 bool MySQLWrapper::checkPin(int pin){
-    if(this->pin == pin){
-        return true;
-    }else{
+    if (pin < 0) {
+        cout << "Invalid PIN." << endl;
         return false;
     }
+    return this->pin == pin;
 }
 
 void MySQLWrapper::displayAllBooks(void){
@@ -187,6 +216,10 @@ void MySQLWrapper::listOfBooks(void){
 }
 
 void MySQLWrapper::addBook(Book book){
+    if (book.getTitle().empty() || book.getAuthor().empty()) {
+        cout << "Book title and author cannot be empty." << endl;
+        return;
+    }
     setQuery("INSERT INTO ksiazki (tytul, seria, autor, wydawnictwo, liczba_stron, rok_wydania) VALUES ('" 
                     + book.getTitle() + "', '" 
                     + book.getSeries() + "', '" 
@@ -213,6 +246,10 @@ void MySQLWrapper::listOfUsers(void){
 }
 
 void MySQLWrapper::updateBook(Book book){
+    if (book.getId() < 0) {
+        cout << "Invalid book ID." << endl;
+        return;
+    }
     std::string query = "UPDATE ksiazki SET ";
     if (!(book.getTitle()=="Unknown")) query += "tytul = '" + book.getTitle() + "', ";
     if (!(book.getSeries()=="Unknown")) query += "seria = '" + book.getSeries() + "', ";
@@ -235,6 +272,10 @@ void MySQLWrapper::updateBook(Book book){
 }
 
 void MySQLWrapper::updateUser(User user){
+    if (user.getUserID() < 0) {
+        cout << "Invalid user ID." << endl;
+        return;
+    }
     std::string query = "UPDATE uzytkownicy SET ";
     if (!(user.getUserName()=="Unknown")) query += "imie = '" + user.getUserName() + "', ";
     if (!(user.getSurname()=="Unknown")) query += "nazwisko = '" + user.getSurname() + "', ";
@@ -268,6 +309,10 @@ void MySQLWrapper::borrowedBooks(void) {
 }
 
 void MySQLWrapper::borrowedBooks(User user) {
+    if (user.getUserID() < 0) {
+        cout << "Invalid user ID." << endl;
+        return;
+    }
     setQuery("SELECT ksiazki.tytul AS TytulKsiazki, uzytkownicy.imie AS Imie, uzytkownicy.nazwisko AS Nazwisko, wypozyczenia.id_produktu FROM  wypozyczenia JOIN ksiazki ON wypozyczenia.id_produktu = ksiazki.id_produktu JOIN uzytkownicy ON wypozyczenia.id_uzytkownika = uzytkownicy.id_uzytkownika WHERE wypozyczenia.status = 'wypożyczona' AND wypozyczenia.id_uzytkownika = " + std::to_string(user.getUserID()) + ";");
     res_set = executeQuery();
     cout << "Currently borrowed books:" << endl;
@@ -279,6 +324,10 @@ void MySQLWrapper::borrowedBooks(User user) {
 }
 
 void MySQLWrapper::updateBorrowedBooks(Book book){
+    if (book.getId() < 0) {
+        cout << "Invalid book ID." << endl;
+        return;
+    }
     setQuery("SELECT id_produktu FROM wypozyczenia WHERE status = 'wypożyczona';");
     res_set = executeQuery();
     while ((row = mysql_fetch_row(res_set))!=NULL){
@@ -299,6 +348,10 @@ void MySQLWrapper::updateBorrowedBooks(Book book){
 }
 
 void MySQLWrapper::addBorrowedBook(Book book, User user){
+    if (book.getId() < 0 || user.getUserID() < 0) {
+        cout << "Invalid book or user ID." << endl;
+        return;
+    }
     query = "INSERT INTO wypozyczenia (id_uzytkownika, id_produktu, data_wypozyczenia, data_zwrotu, status)  VALUES ("+ std::to_string(user.getUserID()) +", "+ std::to_string(book.getId()) +", CURDATE(), NULL, 'wypożyczona');";
     setQuery(query);
     if (mysql_query(conn, query.c_str()) == 0) {
