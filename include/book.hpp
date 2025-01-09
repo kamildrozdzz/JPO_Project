@@ -3,7 +3,8 @@
 
 #include <string>
 
-class Book {
+namespace kd {
+    class Book {
     private:
         int id;       
         std::string title;
@@ -23,6 +24,7 @@ class Book {
         std::string getPublishingHouse(void) const;
         int getNumberOfPages(void) const;
         int getYearOfIssue(void) const;
-};
+    };
+} // namespace kd
 
 #endif // BOOKS_HPP

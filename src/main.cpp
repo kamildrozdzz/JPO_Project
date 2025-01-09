@@ -9,7 +9,7 @@
 
 using std::cout, std::cin, std::endl, std::string;
 
-User user;
+kd::User user;
 
 int main() {
 
@@ -17,7 +17,7 @@ int main() {
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);       
     #endif
-    MySQLWrapper mySQLobject("127.0.0.1", "root", "root", "libraryonline", 3306);
+    kd::MySQLWrapper mySQLobject("127.0.0.1", "root", "root", "libraryonline", 3306);
     mySQLobject.setLoggedUser(user);
     mySQLobject.setPin(1234);
 
@@ -152,7 +152,7 @@ int main() {
                                 cout << "Enter the ID of the book to borrow: ";
                                 int bookId;
                                 cin >> bookId;
-                                Book book(bookId);
+                                kd::Book book(bookId);
                                 mySQLobject.addBorrowedBook(book, user);
                                 break;
                             }
@@ -255,7 +255,7 @@ int main() {
                                                     std::cin.clear();
                                                     std::cin.ignore(10000, '\n');
                                                 }
-                                                Book book(mySQLobject.getNewBookID(), title, series, author, publishingHouse, numberOfPages, yearOfIssue);
+                                                kd::Book book(mySQLobject.getNewBookID(), title, series, author, publishingHouse, numberOfPages, yearOfIssue);
                                                 mySQLobject.addBook(book);
                                             }
                                             break;
@@ -308,7 +308,7 @@ int main() {
                                                         cout << "Invalid input for year of issue. Keeping current value." << endl;
                                                     }
                                                 }
-                                                Book book(id, title, series, author, publishingHouse, numberOfPages, yearOfIssue);
+                                                kd::Book book(id, title, series, author, publishingHouse, numberOfPages, yearOfIssue);
                                                 mySQLobject.updateBook(book);
                                             }
                                             break;
@@ -341,7 +341,7 @@ int main() {
                                                 cout << "Enter the new status (leave empty to keep current): ";
                                                 std::getline(cin, status);
 
-                                                User updateUser(userId, name, surname, email, status);
+                                                kd::User updateUser(userId, name, surname, email, status);
                                                 mySQLobject.updateUser(updateUser);
 
                                             }

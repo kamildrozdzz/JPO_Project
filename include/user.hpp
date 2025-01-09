@@ -3,7 +3,8 @@
 
 #include <string>
 
-class User {
+namespace kd {
+    class User {
     private:
         int id;       
         std::string name;
@@ -23,6 +24,7 @@ class User {
         std::string getStatus(void) const;
         int pin(void);
         void setUser(int id, std::string name, std::string surname, std::string email, std::string status);
-};
+    };
+} // namespace kd
 
 #endif // USERS_HPP
